@@ -163,7 +163,7 @@
           "id": "teamsfx-help-and-feedback",
           "name": "Help and feedback",
           "when": "fx-extension.isTeamsFx",
-          "visibility": "collapsed"
+          "visibility": "visible"
         },
         {
           "id": "teamsfx-empty-project",
@@ -238,6 +238,11 @@
         },
         {
           "command": "fx-extension.openDevelopmentLink",
+          "when": "view == teamsfx-development",
+          "group": "navigation@2"
+        },
+        {
+          "command": "fx-extension.selectTutorials",
           "when": "view == teamsfx-development",
           "group": "navigation@1"
         },
@@ -524,6 +529,7 @@
       {
         "command": "fx-extension.selectTutorials",
         "title": "%teamstoolkit.commands.selectTutorials.title%",
+        "icon": "$(tasklist)",
         "category": "Teams"
       },
       {
