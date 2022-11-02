@@ -218,6 +218,11 @@ export enum TelemetryEvent {
   // To track the A/B test of choosing folder
   SelectFolder = "select-folder",
 
+  // In product documentation
+  InteractWithInProductDoc = "interact-with-in-product-doc",
+  CopyCodeSnippet = "copy-code-snippet",
+  ExpandStep = "expand-step",
+
   Deactivate = "deactivate",
 }
 
@@ -305,6 +310,11 @@ export enum TelemetryProperty {
   HostType = "host-type",
   // Used with ClickGetHelp
   HelpLink = "help-link",
+  // Used with InteractWithInProductDoc
+  Action = "action",
+  CodeSnippet = "code-snippet",
+  DocumentStep = "document-step",
+  Link = "link",
 }
 
 export enum TelemetryMeasurements {
@@ -329,6 +339,7 @@ export enum TelemetryTriggerFrom {
   WalkThrough = "WalkThrough",
   Notification = "Notification",
   QuickPick = "QuickPick",
+  InProductDoc = "InProductDoc",
   Other = "Other",
   Auto = "Auto",
   Unknow = "Unknow",
