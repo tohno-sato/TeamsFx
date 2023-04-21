@@ -18,7 +18,7 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout-pr
+      - name: Checkout-pr-test
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v3
         with:
