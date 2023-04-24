@@ -176,18 +176,18 @@ export class FuncToolChecker implements DepsChecker {
     const portableFunc = await this.checkPortableFuncVersion(nodeVersion);
     const isPortableFuncInstalled = portableFunc.isInstalled;
 
-    if (isGlobalFuncInstalled) {
-      this._telemetry.sendEvent(DepsCheckerEvent.funcAlreadyInstalled, {
-        "global-func-version": globalFunc.funcVersion ?? "",
-      });
-      if (!isPortableFuncInstalled) {
-        await this.cleanup();
-      }
-    }
-    if (isPortableFuncInstalled) {
-      // avoid missing this event after first installation 60 days
-      this._telemetry.sendEvent(DepsCheckerEvent.funcInstallCompleted);
-    }
+    // if (isGlobalFuncInstalled) {
+    //   this._telemetry.sendEvent(DepsCheckerEvent.funcAlreadyInstalled, {
+    //     "global-func-version": globalFunc.funcVersion ?? "",
+    //   });
+    //   if (!isPortableFuncInstalled) {
+    //     await this.cleanup();
+    //   }
+    // }
+    // if (isPortableFuncInstalled) {
+    //   // avoid missing this event after first installation 60 days
+    //   this._telemetry.sendEvent(DepsCheckerEvent.funcInstallCompleted);
+    // }
 
     const depsInfo = await this.getDepsInfo(isPortableFuncInstalled, isGlobalFuncInstalled);
     return Object.assign(depsInfo, { globalFunc: globalFunc, portableFunc: portableFunc });
@@ -406,19 +406,19 @@ export class FuncToolChecker implements DepsChecker {
   }
 
   private async queryGlobalFuncVersion(): Promise<FuncVersion | null> {
-    try {
-      const output = await cpUtils.executeCommand(
-        undefined,
-        this._logger,
-        // same as backend start, avoid powershell execution policy issue.
-        { shell: isWindows() ? "cmd.exe" : true },
-        "func",
-        "--version"
-      );
-      return mapToFuncToolsVersion(output);
-    } catch (error) {
-      return null;
-    }
+    //try {
+    const output = await cpUtils.executeCommand(
+      undefined,
+      this._logger,
+      // same as backend start, avoid powershell execution policy issue.
+      { shell: isWindows() ? "cmd.exe" : true },
+      "func",
+      "--version"
+    );
+    return mapToFuncToolsVersion(output);
+    // } catch (error) {
+    //   return null;
+    // }
   }
 
   private async hasNPM(): Promise<boolean> {
