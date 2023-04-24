@@ -125,7 +125,8 @@ jobs:
 
       - name: Setup Azure Functions Core Tools For Linux
         run: |
-          sudo npm install --unsafe-perm -g azure-functions-core-tools@4
+          which func
+          func --version
 
       - name: Setup legacy-peer-deps
         run: |
