@@ -417,7 +417,7 @@ export class FuncToolChecker implements DepsChecker {
       );
       return mapToFuncToolsVersion(output);
     } catch (error) {
-      return null;
+      throw error;
     }
   }
 
