@@ -517,16 +517,12 @@ export async function generateConfigBiceps(
 ): Promise<Result<undefined, FxError>> {
   ensureComponentConnections(context.projectSetting);
   for (const config of context.projectSetting.components) {
-    if (
-      config.name === ComponentNames.AzureWebApp ||
-      config.name === ComponentNames.Function ||
-      config.name === ComponentNames.APIM
-    ) {
+    if (config.name === ComponentNames.AzureWebApp || config.name === ComponentNames.Function) {
       const scenario = config.scenario;
       const clonedInputs = cloneDeep(inputs);
       assign(clonedInputs, {
-        componentId: config.name === ComponentNames.APIM ? "" : scenarioToComponent.get(scenario),
-        scenario: config.name === ComponentNames.APIM ? "" : scenario,
+        componentId: scenarioToComponent.get(scenario),
+        scenario: scenario,
       });
       const component = Container.get<CloudResource>(config.name + "-config");
       const res = await component.generateBicep!(context, clonedInputs);

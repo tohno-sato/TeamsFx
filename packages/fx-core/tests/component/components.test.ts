@@ -51,15 +51,10 @@ import { apiConnectorImpl } from "../../src/component/feature/apiconnector/apiCo
 import * as backup from "../../src/component/utils/backupFiles";
 import { AadApp } from "../../src/component/resource/aadApp/aadApp";
 import { TokenCredential, AccessToken, GetTokenOptions } from "@azure/core-auth";
-import { CoreQuestionNames } from "../../src/core/question";
 import * as questionV3 from "../../src/component/question";
 import { provisionUtils } from "../../src/component/provisionUtils";
 import { deployUtils } from "../../src/component/deployUtils";
-import {
-  AzureResourceApim,
-  AzureResourceSQL,
-  AzureSolutionQuestionNames,
-} from "../../src/component/constants";
+import { AzureResourceSQL, AzureSolutionQuestionNames } from "../../src/component/constants";
 import { AddSsoParameters } from "../../src/component/constants";
 import { BuiltInFeaturePluginNames } from "../../src/component/constants";
 import { Constants } from "../../src/component/resource/aadApp/constants";
@@ -273,35 +268,6 @@ describe("Core component test for v3", () => {
       console.log(res.error);
     }
     assert.isTrue(res.isOk());
-  });
-  it("apim-feature.add", async () => {
-    sandbox.stub(FunctionScaffold, "scaffoldFunction").resolves();
-    const inputs: InputsWithProjectPath = {
-      projectPath: projectPath,
-      platform: Platform.VSCode,
-      ["function-name"]: "getUserProfile",
-    };
-    const component = Container.get("apim-feature") as any;
-    const res = await component.add(context, inputs);
-    if (res.isErr()) {
-      console.log(res.error);
-    }
-    assert.isTrue(res.isOk());
-  });
-  it("fx.addFeature(apim-feature)", async () => {
-    sandbox.stub(FunctionScaffold, "scaffoldFunction").resolves();
-    const inputs: InputsWithProjectPath = {
-      projectPath: projectPath,
-      platform: Platform.VSCode,
-      ["function-name"]: "getUserProfile",
-      [CoreQuestionNames.Features]: AzureResourceApim.id,
-    };
-    const component = Container.get("fx") as any;
-    const res = await component.addFeature(context, inputs);
-    if (res.isErr()) {
-      console.log(res.error);
-    }
-    assert.isTrue(res.isErr());
   });
 
   describe("provision", async () => {

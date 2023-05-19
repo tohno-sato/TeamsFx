@@ -19,7 +19,6 @@ import {
 } from "../../src/component/question";
 import {
   ApiConnectionOptionItem,
-  AzureResourceApimNewUI,
   AzureResourceFunctionNewUI,
   AzureResourceKeyVaultNewUI,
   AzureResourceSQLNewUI,
@@ -223,7 +222,6 @@ describe("question for v3", () => {
             BotNewUIOptionItem(),
             MessageExtensionNewUIItem(),
             AzureResourceFunctionNewUI,
-            AzureResourceApimNewUI,
             AzureResourceSQLNewUI,
             AzureResourceKeyVaultNewUI,
             SingleSignOnOptionItem,
@@ -362,7 +360,6 @@ describe("question for v3", () => {
       TabNonSsoItem(),
       BotNewUIOptionItem(),
       AzureResourceFunctionNewUI,
-      AzureResourceApimNewUI,
       AzureResourceSQLNewUI,
       AzureResourceKeyVaultNewUI,
       SingleSignOnOptionItem,

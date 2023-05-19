@@ -20,7 +20,6 @@ export const ComponentNames = {
   SPFxTab: "spfx-tab",
   SPFx: "spfx",
   Identity: "identity",
-  APIMFeature: "apim-feature",
   APIM: "apim",
   KeyVault: "key-vault",
   AzureSQL: "azure-sql",
@@ -1040,19 +1039,6 @@ export const AzureResourceFunctionNewUI: OptionItem = {
   id: "function",
   label: `$(azure) ${getLocalizedString("core.AzureResourceFunctionNewUI.label")}`,
   detail: getLocalizedString("core.AzureResourceFunctionNewUI.detail"),
-  groupName: getLocalizedString("core.options.separator.resource"),
-};
-
-export const AzureResourceApim: OptionItem = {
-  id: "apim",
-  label: getLocalizedString("core.AzureResourceApim.label"),
-  description: getLocalizedString("core.AzureResourceApim.description"),
-};
-
-export const AzureResourceApimNewUI: OptionItem = {
-  id: "apim",
-  label: `$(azure) ${getLocalizedString("core.AzureResourceApimNewUI.label")}`,
-  detail: getLocalizedString("core.AzureResourceApimNewUI.detail"),
   groupName: getLocalizedString("core.options.separator.resource"),
 };
 

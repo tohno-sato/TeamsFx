@@ -52,7 +52,6 @@ import { ExecutionError, ExecutionOutput, ILifecycle } from "../configManager/in
 import { Lifecycle } from "../configManager/lifecycle";
 import {
   ApiConnectionOptionItem,
-  AzureResourceApim,
   AzureResourceFunctionNewUI,
   AzureResourceKeyVaultNewUI,
   AzureResourceSQLNewUI,
@@ -472,8 +471,6 @@ export class Coordinator {
       component = Container.get("sql");
     } else if (features === AzureResourceFunctionNewUI.id) {
       component = Container.get(ComponentNames.TeamsApi);
-    } else if (features === AzureResourceApim.id) {
-      component = Container.get(ComponentNames.APIMFeature);
     } else if (features === AzureResourceKeyVaultNewUI.id) {
       component = Container.get("key-vault-feature");
     } else if (features === CicdOptionItem.id) {

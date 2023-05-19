@@ -33,7 +33,6 @@ import { HelpLinks, ResourcePlugins } from "../common/constants";
 import { getDefaultString, getLocalizedString } from "../common/localizeUtils";
 import {
   hasAAD,
-  hasAPIM,
   hasAzureResourceV3,
   hasBot,
   hasApi,
@@ -43,8 +42,6 @@ import {
 import { canAddCICDWorkflows } from "../common/tools";
 import {
   ApiConnectionOptionItem,
-  AzureResourceApim,
-  AzureResourceApimNewUI,
   AzureResourceFunction,
   AzureResourceFunctionNewUI,
   AzureResourceKeyVault,
@@ -262,7 +259,6 @@ export async function getQuestionsForAddFeatureV3(
     options.push(BotNewUIOptionItem());
     options.push(TabNewUIOptionItem(), TabNonSsoItem());
     options.push(MessageExtensionNewUIItem());
-    options.push(AzureResourceApimNewUI);
     options.push(AzureResourceSQLNewUI);
     options.push(AzureResourceFunctionNewUI);
     options.push(AzureResourceKeyVaultNewUI);
@@ -316,9 +312,6 @@ export async function getQuestionsForAddFeatureV3(
     // function can always be added
     options.push(AzureResourceFunctionNewUI);
     // check cloud resource options
-    if (!hasAPIM(projectSettingsV3)) {
-      options.push(AzureResourceApimNewUI);
-    }
     options.push(AzureResourceSQLNewUI);
     if (!hasKeyVault(projectSettingsV3)) {
       options.push(AzureResourceKeyVaultNewUI);
@@ -390,7 +383,6 @@ export async function getQuestionsForAddResourceV3(
   const options: OptionItem[] = [];
   question.staticOptions = options;
   if (inputs.platform === Platform.CLI_HELP) {
-    options.push(AzureResourceApimNewUI);
     options.push(AzureResourceSQLNewUI);
     options.push(AzureResourceFunctionNewUI);
     options.push(AzureResourceKeyVaultNewUI);
@@ -401,9 +393,6 @@ export async function getQuestionsForAddResourceV3(
     return ok(addResourceNode);
   }
   const projectSettingsV3 = ctx.projectSetting as ProjectSettingsV3;
-  if (!hasAPIM(projectSettingsV3)) {
-    options.push(AzureResourceApimNewUI);
-  }
   options.push(AzureResourceSQLNewUI);
   if (!hasKeyVault(projectSettingsV3)) {
     options.push(AzureResourceKeyVaultNewUI);
@@ -466,7 +455,6 @@ export const FeatureIdToComponent = {
   [FeatureId.M365SearchApp]: ComponentNames.TeamsBot,
   [FeatureId.MessagingExtension]: ComponentNames.TeamsBot,
   [FeatureId.function]: ComponentNames.TeamsApi,
-  [FeatureId.apim]: ComponentNames.APIMFeature,
   [FeatureId.sql]: ComponentNames.AzureSQL,
   [FeatureId.keyvault]: ComponentNames.KeyVault,
   [FeatureId.sso]: ComponentNames.SSO,
@@ -491,10 +479,7 @@ export async function getQuestionsForAddFeatureSubCommand(
   } else if (featureId === TabSPFxNewUIItem().id) {
     return ok(new QTreeNode(webpartNameQuestion));
   } else if (featureId === AzureResourceSQLNewUI.id) {
-  } else if (
-    featureId === AzureResourceFunctionNewUI.id ||
-    featureId === AzureResourceApimNewUI.id
-  ) {
+  } else if (featureId === AzureResourceFunctionNewUI.id) {
     functionNameQuestion.validation = undefined;
     return ok(new QTreeNode(functionNameQuestion));
   } else if (featureId === AzureResourceKeyVaultNewUI.id) {
@@ -566,7 +551,6 @@ export function createAddAzureResourceQuestion(
   alreadyHaveKeyVault: boolean
 ): MultiSelectQuestion {
   const options: OptionItem[] = [AzureResourceFunction, AzureResourceSQL];
-  if (!alreadyHaveAPIM) options.push(AzureResourceApim);
   if (!alreadyHaveKeyVault) options.push(AzureResourceKeyVault);
   return {
     name: AzureSolutionQuestionNames.AddResources,
@@ -579,8 +563,7 @@ export function createAddAzureResourceQuestion(
       previousSelectedIds: Set<string>
     ): Promise<Set<string>> {
       const hasSQL = currentSelectedIds.has(AzureResourceSQL.id);
-      const hasAPIM = currentSelectedIds.has(AzureResourceApim.id);
-      if ((hasSQL || hasAPIM) && !alreadyHaveFunction) {
+      if (hasSQL && !alreadyHaveFunction) {
         currentSelectedIds.add(AzureResourceFunction.id);
       }
       return currentSelectedIds;
@@ -593,7 +576,6 @@ export function createAddCloudResourceOptions(
   alreadyHaveKeyVault: boolean
 ): OptionItem[] {
   const options: OptionItem[] = [AzureResourceFunctionNewUI];
-  if (!alreadyHaveAPIM) options.push(AzureResourceApimNewUI);
   options.push(AzureResourceSQLNewUI);
   if (!alreadyHaveKeyVault) options.push(AzureResourceKeyVaultNewUI);
   return options;
