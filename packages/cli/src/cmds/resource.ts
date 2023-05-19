@@ -47,24 +47,6 @@ export class ResourceAddSql extends ResourceAddBase {
     "An always-up-to-date relational database service built for the cloud";
 }
 
-export class ResourceAddApim extends ResourceAddBase {
-  public readonly featureId = FeatureId.apim;
-  public readonly commandHead = `azure-apim`;
-  public readonly command = `${this.commandHead}`;
-  public readonly description =
-    "A hybrid, multicloud management platform for APIs across all environments";
-
-  public override modifyArguments(args: { [argName: string]: any }) {
-    if (!("apim-resource-group" in args)) {
-      args["apim-resource-group"] = undefined;
-    }
-    if (!("apim-service-name" in args)) {
-      args["apim-service-name"] = undefined;
-    }
-    return args;
-  }
-}
-
 export class ResourceAddKeyVault extends ResourceAddBase {
   public readonly featureId = FeatureId.keyvault;
   public readonly commandHead = `azure-keyvault`;

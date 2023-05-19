@@ -145,14 +145,12 @@ export async function getQuestionsForDeployV3(
     ComponentNames.TeamsTab,
     ComponentNames.TeamsBot,
     ComponentNames.TeamsApi,
-    ComponentNames.APIM,
     ComponentNames.AppManifest,
   ];
   const componentDisplayNames = {
     [ComponentNames.TeamsTab]: "NodeJS Tab frontend",
     [ComponentNames.TeamsBot]: "Bot",
     [ComponentNames.TeamsApi]: "Azure Function",
-    [ComponentNames.APIM]: "API Management",
     [ComponentNames.AppManifest]: "App Studio",
     [ComponentNames.AadApp]: "AAD",
   };
@@ -433,7 +431,6 @@ export enum FeatureId {
   Bot = "Bot",
   MessagingExtension = "MessagingExtension",
   function = "function",
-  apim = "apim",
   sql = "sql",
   keyvault = "keyvault",
   sso = "sso",

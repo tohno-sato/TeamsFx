@@ -18,12 +18,7 @@ import {
 } from "../telemetry/cliTelemetryEvents";
 import activate from "../activate";
 import { getSystemInputs } from "../utils";
-import {
-  ResourceAddApim,
-  ResourceAddFunction,
-  ResourceAddKeyVault,
-  ResourceAddSql,
-} from "./resource";
+import { ResourceAddFunction, ResourceAddKeyVault, ResourceAddSql } from "./resource";
 import {
   AddWebpart,
   CapabilityAddBot,
@@ -238,7 +233,6 @@ export default class Add extends YargsCommand {
 
         // Category 2: Add Cloud Resources
         new ResourceAddFunction(),
-        new ResourceAddApim(),
         new ResourceAddSql(),
         new ResourceAddKeyVault(),
 
