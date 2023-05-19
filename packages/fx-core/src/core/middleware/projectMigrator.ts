@@ -99,7 +99,6 @@ import {
   hasBot as hasBotV3,
   hasSPFxTab,
 } from "../../common/projectSettingsHelperV3";
-import { APIMResource } from "../../component/resource/apim/apim";
 
 const programmingLanguage = "programmingLanguage";
 const defaultFunctionName = "defaultFunctionName";
@@ -1122,16 +1121,7 @@ export async function generateBicepsV3(
     }
   }
 
-  // apim
-  {
-    const config = getComponent(projectSettings, ComponentNames.APIM);
-    if (config) {
-      const resource = Container.get<APIMResource>(ComponentNames.APIM);
-      const res = await resource.generateBicep(context, inputs);
-      if (res.isErr()) return err(res.error);
-      res.value.forEach((b: Bicep) => biceps.push(b));
-    }
-  }
+  // apim removed
 
   // keyvault
   {

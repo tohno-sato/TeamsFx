@@ -29,14 +29,12 @@ import "./code/api/apiCode";
 import "./code/botCode";
 import "./code/spfxTabCode";
 import "./code/tab/tabCode";
-import "./connection/apimConfig";
 import "./connection/azureFunctionConfig";
 import "./connection/azureWebAppConfig";
 import { configLocalEnvironment, setupLocalEnvironment } from "./debug";
 import { createEnvWithName } from "./envManager";
 import "./feature/api/api";
 import "./feature/apiconnector/apiConnector";
-import "./feature/apim";
 import "./feature/bot/bot";
 import "./feature/cicd/cicd";
 import "./feature/keyVault";
@@ -44,7 +42,6 @@ import "./feature/spfx";
 import "./feature/sql";
 import "./feature/sso";
 import "./feature/tab";
-import "./resource/apim/apim";
 import { AppManifest } from "./resource/appManifest/appManifest";
 import "./resource/azureAppService/azureFunction";
 import "./resource/azureAppService/azureWebApp";
@@ -74,7 +71,6 @@ import { globalVars } from "../core/globalVars";
 import arm from "./arm";
 import {
   ApiConnectionOptionItem,
-  AzureResourceApim,
   AzureResourceFunctionNewUI,
   AzureResourceKeyVaultNewUI,
   AzureResourceSQLNewUI,
@@ -264,8 +260,6 @@ export class TeamsfxCore {
       component = Container.get("sql");
     } else if (features === AzureResourceFunctionNewUI.id) {
       component = Container.get(ComponentNames.TeamsApi);
-    } else if (features === AzureResourceApim.id) {
-      component = Container.get(ComponentNames.APIMFeature);
     } else if (features === AzureResourceKeyVaultNewUI.id) {
       component = Container.get("key-vault-feature");
     } else if (features === CicdOptionItem.id) {

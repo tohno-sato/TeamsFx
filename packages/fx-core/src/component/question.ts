@@ -102,7 +102,6 @@ import {
 import { buildQuestionNode } from "./resource/azureSql/questions";
 import { ApiConnectorImpl } from "./feature/apiconnector/ApiConnectorImpl";
 import { webpartNameQuestion } from "./resource/spfx/utils/questions";
-import { getQuestionsForDeployAPIM } from "./resource/apim/apim";
 import { canAddSso } from "./feature/sso";
 import { addCicdQuestion } from "./feature/cicd/cicd";
 import { InvalidFeature } from "./error";
@@ -205,21 +204,6 @@ export async function getQuestionsForDeployV3(
   selectQuestion.staticOptions = options;
   selectQuestion.default = options.map((i) => i.id);
   const node = new QTreeNode(selectQuestion);
-  if (selectableComponents.includes(ComponentNames.APIM)) {
-    const resourceContext = ctx as ContextV3;
-    resourceContext.envInfo = envInfo;
-    resourceContext.tokenProvider = ctx.tokenProvider;
-    const apimDeployNodeRes = await getQuestionsForDeployAPIM(
-      resourceContext as ResourceContextV3,
-      inputs as InputsWithProjectPath
-    );
-    if (apimDeployNodeRes.isErr()) return err(apimDeployNodeRes.error);
-    if (apimDeployNodeRes.value) {
-      const apimNode = apimDeployNodeRes.value;
-      apimNode.condition = { contains: BuiltInFeaturePluginNames.apim };
-      node.addChild(apimNode);
-    }
-  }
   if (selectableComponents.includes(ComponentNames.AadApp)) {
     const aadNode = new QTreeNode({
       name: Constants.INCLUDE_AAD_MANIFEST,
