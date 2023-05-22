@@ -90,7 +90,6 @@ describe("Add api-connector Command Tests", () => {
       "bot",
       "message-extension",
       "azure-function",
-      "azure-apim",
       "azure-sql",
       "azure-keyvault",
       "api-connection [auth-type]",

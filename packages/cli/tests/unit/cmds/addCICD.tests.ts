@@ -96,7 +96,6 @@ describe("Add CICD Command Tests", function () {
       "bot",
       "message-extension",
       "azure-function",
-      "azure-apim",
       "azure-sql",
       "azure-keyvault",
       "cicd",
