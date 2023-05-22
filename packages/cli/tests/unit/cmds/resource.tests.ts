@@ -23,7 +23,7 @@ import { environmentManager, FxCore } from "@microsoft/teamsfx-core";
 import { ProjectSettingsHelper } from "@microsoft/teamsfx-core/build/common/local";
 import { FileNotFoundError } from "@microsoft/teamsfx-core/build/error/common";
 import { EnvStateFiles } from "@microsoft/teamsfx-core/build/core/environment";
-import { ResourceAddApim, ResourceAddFunction, ResourceAddSql } from "../../../src/cmds/resource";
+import { ResourceAddFunction, ResourceAddSql } from "../../../src/cmds/resource";
 import CliTelemetry from "../../../src/telemetry/cliTelemetry";
 import HelpParamGenerator from "../../../src/helpParamGenerator";
 import {
@@ -257,61 +257,6 @@ describe("Resource Command Tests", function () {
 
   it("Resource Add Function Command Running Check with Error", async () => {
     const cmd = new ResourceAddFunction();
-    const args = {
-      [constants.RootFolderNode.data.name as string]: "fake",
-    };
-    try {
-      await cmd.handler(args);
-      throw new Error("Should throw an error.");
-    } catch (e) {
-      expect(telemetryEvents).deep.equals([
-        TelemetryEvent.UpdateProjectStart,
-        TelemetryEvent.UpdateProject,
-      ]);
-      expect(telemetryEventStatus).equals(TelemetrySuccess.No);
-      expect(e).instanceOf(UserError);
-      expect(e.name).equals("NotSupportedProjectType");
-    }
-  });
-
-  it("Resource Add APIM Command Running Check", async () => {
-    const cmd = new ResourceAddApim();
-    cmd["params"] = params;
-    const args = {
-      [constants.RootFolderNode.data.name as string]: "real",
-    };
-    await cmd.handler(args);
-    expect(allArguments.get("apim-resource-group")).equals(undefined);
-    expect(allArguments.get("apim-service-name")).equals(undefined);
-    expect(telemetryEvents).deep.equals([
-      TelemetryEvent.UpdateProjectStart,
-      TelemetryEvent.UpdateProject,
-    ]);
-    expect(telemetryEventStatus).equals(TelemetrySuccess.Yes);
-  });
-
-  it("Resource Add APIM Command Running Check with setSubscriptionId Error", async () => {
-    const cmd = new ResourceAddApim();
-    const args = {
-      [constants.RootFolderNode.data.name as string]: "real",
-      subscription: "fake",
-    };
-    try {
-      await cmd.handler(args);
-      throw new Error("Should throw an error.");
-    } catch (e) {
-      expect(telemetryEvents).deep.equals([
-        TelemetryEvent.UpdateProjectStart,
-        TelemetryEvent.UpdateProject,
-      ]);
-      expect(telemetryEventStatus).equals(TelemetrySuccess.No);
-      expect(e).instanceOf(UserError);
-      expect(e.name).equals("NotFoundSubscriptionId");
-    }
-  });
-
-  it("Resource Add APIM Command Running Check with NotSupportedProjectType Error", async () => {
-    const cmd = new ResourceAddApim();
     const args = {
       [constants.RootFolderNode.data.name as string]: "fake",
     };
