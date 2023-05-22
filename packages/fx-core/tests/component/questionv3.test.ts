@@ -207,7 +207,7 @@ describe("question for v3", () => {
         node &&
           node.data &&
           node.data.type === "singleSelect" &&
-          node.data.staticOptions.length === 11,
+          node.data.staticOptions.length === 10,
         "option item count check"
       );
       if (node && node.data && node.data.type === "singleSelect") {
