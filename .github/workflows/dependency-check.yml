@@ -41,3 +41,5 @@ jobs:
         with:
           token: "x-access-token:${{ steps.teamsfx-renovate.outputs.token }}"
           configurationFile: .github/renovate.json
+        env:
+          LOG_LEVEL: "debug"

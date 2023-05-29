@@ -5,7 +5,6 @@
   "gitAuthor": "teamsfx-renovate<134346904+teamsfx-renovate[bot]@users.noreply.github.com>",
   "repositories": ["yiqing-zhao/TeamsFx"],
   "dryRun": "full",
-  "dependencyDashboard": true,
   "includePaths": ["packages/sdk/**", "packages/sdk-react/**", "templates/**"],
   "enabledManagers": ["npm"],
   "npm": {
