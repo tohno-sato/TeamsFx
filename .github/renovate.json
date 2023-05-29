@@ -5,11 +5,8 @@
   "gitAuthor": "teamsfx-renovate<134346904+teamsfx-renovate[bot]@users.noreply.github.com>",
   "repositories": ["yiqing-zhao/TeamsFx"],
   "dryRun": "full",
-  "includePaths": [
-    "packages/sdk/**",
-    "packages/sdk-react/**",
-    "templates/scenarios/**"
-  ],
+  "dependencyDashboard": true,
+  "includePaths": ["packages/sdk/**", "packages/sdk-react/**", "templates/**"],
   "enabledManagers": ["npm"],
   "npm": {
     "fileMatch": ["(^|/)package\\.json.tpl$"]
