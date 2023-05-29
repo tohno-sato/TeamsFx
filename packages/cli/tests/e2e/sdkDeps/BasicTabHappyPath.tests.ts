@@ -6,6 +6,7 @@
 
 import { assert } from "chai";
 import fs from "fs-extra";
+import os from "os";
 import path from "path";
 import { it } from "@microsoft/extra-shot-mocha";
 import {
@@ -48,6 +49,8 @@ describe("Basic Tab", function () {
       }
 
       console.log(testFolder);
+      const dir = await fs.readdir(path.resolve(os.homedir(), "work/TeamsFx/TeamsFx/packages/cli"));
+      console.log(dir);
 
       // // Scaffold
       // await CliHelper.createProjectWithCapability(
