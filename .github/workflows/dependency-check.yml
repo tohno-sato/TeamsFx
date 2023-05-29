@@ -40,4 +40,4 @@ jobs:
         uses: renovatebot/github-action@v36.0.0
         with:
           token: "x-access-token:${{ steps.teamsfx-renovate.outputs.token }}"
-          configurationFile: renovate.json
+          configurationFile: .github/renovate.json
