@@ -24,30 +24,6 @@ jobs:
     env:
       CI: true
     steps:
-      - name: Validate CD branch
-        if: ${{ github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/hotfix/') && github.ref != 'refs/heads/dev' }}
-        run: |
-          echo It's not allowed to run CD on other branch except main and dev.
-          exit 1
-
-      - name: Validate inputs for main or hotfix
-        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.inputs.preid != 'rc' && github.event.inputs.preid != 'stable' }}
-        run: |
-          echo It's only allowed to release RC and stable on main branch.
-          exit 1
-
-      - name: Valiadte inputs for dev
-        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev' && github.event.inputs.preid != 'alpha' }}
-        run: |
-          echo It's only allowed to alpha on dev branch.
-          exit 1
-
-      - name: Validate schedule
-        if: ${{ github.event_name == 'schedule' && github.ref != 'refs/heads/dev' }}
-        run: |
-          echo It's not allowed to run schedule release except dev branch.
-          exit 1
-
       - name: Checkout branch
         uses: actions/checkout@v3
         with:
@@ -60,18 +36,9 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install wine64
-        run: |
-          sudo apt update
-          sudo apt install wine64 -y
-
       - name: Setup npm registry
         run: |
           echo "${{ secrets.NPMRC }}" > ~/.npmrc
-
-      - name: manage pkgs to release
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pkgs }}
-        run: bash .github/scripts/lerna.sh ${{github.event.inputs.pkgs}}
 
       - name: Setup project
         run: |
@@ -85,29 +52,8 @@ jobs:
           git config --global user.email 'yiz@microsoft.com'
 
       - name: release alpha npm packages to npmjs.org
-        if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
           npx lerna version prerelease --preid=alpha.$(git rev-parse --short HEAD) --exact --no-push --allow-branch dev --yes
-
-      - name: release beta packages to npmjs.org
-        if: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/')) && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'beta' }}
-        run: |
-          npx lerna version prerelease --preid=beta.$(date "+%Y%m%d%H") --exact --no-push --allow-branch ${GITHUB_REF#refs/*/} --yes
-
-      - name: version rc npm packages to npmjs.org
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' && github.ref == 'refs/heads/main' && github.event.inputs.skip-version-rc == 'no'}}
-        run: |
-          npx lerna version prerelease --conventional-prerelease --preid=rc --no-changelog --yes
-
-      - name: version rc npm packages to npmjs.org on hotfix
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' && startsWith(github.ref, 'refs/heads/hotfix/') && github.event.inputs.skip-version-rc == 'no'}}
-        run: |
-          npx lerna version prerelease --conventional-prerelease --preid=rc-hotfix --no-changelog --allow-branch ${GITHUB_REF#refs/*/} --yes
-
-      - name: version stable npm packages to npmjs.org
-        if: ${{ github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/')) && github.event.inputs.preid == 'stable' }}
-        run: |
-          npx lerna version --conventional-commits --conventional-graduate --no-changelog --allow-branch ${GITHUB_REF#refs/*/} --yes
 
       - name: version change
         id: version-change
@@ -134,153 +80,13 @@ jobs:
         env:
           TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
 
-      - name: update templates beta tag
-        uses: richardsimko/update-tag@v1
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event.inputs.preid == 'beta' }}
-        with:
-          tag_name: "templates-0.0.0-beta"
-        env:
-          GITHUB_TOKEN: ${{ secrets.CD_PAT }}
-
-      - name: release templates' beta version to github
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event.inputs.preid == 'beta' }}
-        uses: ncipollo/release-action@v1.10.0
-        with:
-          token: ${{ secrets.CD_PAT }}
-          prerelease: true
-          tag: "templates-0.0.0-beta"
-          artifacts: ${{ runner.temp }}/teamsfx_templates_v3/*.zip
-          allowUpdates: true
-          removeArtifacts: true
-
-      - name: update template rc tag
-        uses: richardsimko/update-tag@v1
-        if: ${{ (contains(steps.version-change.outputs.CHANGED, 'templates@') || contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx')) && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' }}
-        with:
-          tag_name: "templates@0.0.0-rc"
-        env:
-          GITHUB_TOKEN: ${{ secrets.CD_PAT }}
-
-      - name: release templates' RC version to github
-        if: ${{ (contains(steps.version-change.outputs.CHANGED, 'templates@') || contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx')) && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' }}
-        uses: ncipollo/release-action@v1.10.0
-        with:
-          token: ${{ secrets.CD_PAT }}
-          prerelease: true
-          tag: "templates@0.0.0-rc"
-          artifacts: ${{ runner.temp }}/teamsfx_templates_v3/*.zip
-          allowUpdates: true
-          removeArtifacts: true
-
-      - name: Create Templates Stable Release
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
-        uses: ncipollo/release-action@v1.10.0
-        with:
-          artifacts: ${{ runner.temp }}/teamsfx_templates_v3/*.zip
-          name: "Release for ${{ steps.version-change.outputs.TEMPLATE_VERSION }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.version-change.outputs.TEMPLATE_VERSION }}
-          allowUpdates: true
-
-      - name: Generate Tag List
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
-        run: git tag | grep templates > ${{ runner.temp }}/template-tags.txt
-
-      - name: Update Template Tag list Release
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
-        uses: ncipollo/release-action@v1.10.0
-        with:
-          artifacts: ${{ runner.temp }}/template-tags.txt
-          name: "Template Tag List"
-          body: "Release to maintain template tag list."
-          token: ${{ secrets.github_token }}
-          tag: "template-tag-list"
-          allowUpdates: true
-
-      - name: download simpleauth to fx-core
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 10
-          retry_on: error
-          command: |
-            bash ./.github/scripts/download-simpleauth.sh
-
-      - name: replace sideloading placeholders
-        run: bash .github/scripts/sideloading-replace.sh
-        env:
-          SIDELOADING_SERVICE_ENDPOINT: ${{ secrets.SIDELOADING_SERVICE_ENDPOINT }}
-          SIDELOADING_SERVICE_SCOPE: ${{ secrets.SIDELOADING_SERVICE_SCOPE }}
-
-      - name: commit change on local
-        run: |
-          git add packages/fx-core/src/common/m365/serviceConstant.ts
-          git commit -m "build: replace sideloading placeholders"
-
-      - name: update cli ai key
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid != 'alpha' }}
-        uses: jossef/action-set-json-field@v1
-        with:
-          file: ./packages/cli/package.json
-          field: aiKey
-          value: ${{ secrets.CLI_PUBLIC_AIKEY }}
-
-      - name: update extension ai key
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid != 'alpha' }}
-        uses: jossef/action-set-json-field@v1
-        with:
-          file: ./packages/vscode-extension/package.json
-          field: aiKey
-          value: ${{ secrets.EXT_PUBLIC_AIKEY }}
-
-      - name: commit change on local
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid != 'alpha' }}
-        run: |
-          git add ./packages/cli/package.json ./packages/vscode-extension/package.json
-          git commit -m "build: update ai key"
-
       - name: publish alpha release to npm org
-        if: ${{ github.ref == 'refs/heads/dev'}}
         run: |
           npx lerna publish from-package --dist-tag=alpha --yes --allow-branch dev
         env:
           TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
 
-      - name: publish beta release to npm org
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'beta' }}
-        run: |
-          npx lerna publish from-package --dist-tag=beta --yes
-        env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
-
-      - name: publish rc npm packages to npmjs.org
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' }}
-        run: |
-          npx lerna publish from-package --dist-tag=rc --yes
-        env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
-
-      - name: publish stable npm packages to npmjs.org
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
-        run: |
-          npx lerna publish from-package --yes
-        env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
-
-      - name: pack server bits
-        if: ${{ contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx-server') }}
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 10
-          retry_on: error
-          command: |
-            sleep 20
-            cd ./packages/server
-            npm run package
-
       - name: pack vsix
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'ms-teams-vscode-extension@') && github.event.inputs.preid != 'beta' }}
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         uses: nick-invision/retry@v2
@@ -294,52 +100,6 @@ jobs:
             npm install --only=production
             npx vsce package
 
-      - name: release stable VSCode extension to github
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'ms-teams-vscode-extension@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
-        uses: ncipollo/release-action@v1.10.0
-        with:
-          token: ${{ secrets.CD_PAT }}
-          tag: ${{ steps.version-change.outputs.EXTENSION_VERSION }}
-          artifacts: ./packages/**/*.vsix
-          artifactErrorsFailBuild: true
-          bodyFile: ./CHANGELOG.md
-
-      - name: Calculate beta version number
-        id: beta-version
-        working-directory: packages/vscode-extension
-        run: |
-          DATE_WITH_TIME=`date "+%Y%m%d%H"`
-          PRERELEASE_VERSION=$(jq -r .version package.json | cut -c1-3)
-          TTK_VERSION=$PRERELEASE_VERSION.$DATE_WITH_TIME
-          echo "version=$TTK_VERSION" >> $GITHUB_OUTPUT
-          echo $TTK_VERSION
-
-      - name: set vsc version for beta
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'ms-teams-vscode-extension@') && github.event.inputs.preid == 'beta' }}
-        uses: jossef/action-set-json-field@v1
-        with:
-          file: ./packages/vscode-extension/package.json
-          field: version
-          value: ${{ steps.beta-version.outputs.version }}
-
-      - name: pack vsix for beta
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'ms-teams-vscode-extension@') && github.event.inputs.preid == 'beta' }}
-        env:
-          RELEASE: preview
-          NODE_OPTIONS: "--max_old_space_size=4096"
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 10
-          retry_on: error
-          command: |
-            sleep 20
-            cd ./packages/vscode-extension
-            touch test.vsix
-            rm *.vsix
-            npm install --only=production
-            npx vsce package --pre-release ${{ steps.beta-version.outputs.version }}
-
       - name: save release info
         run: |
           rm -f changed.txt
@@ -347,7 +107,6 @@ jobs:
           echo ${{steps.version-change.outputs.CHANGED}} > changed.txt
           npx lerna ls -all --json > versions.json
           find ./packages/vscode-extension -type f -name '*.vsix' -exec mv {} . \;
-          find ./packages/server/lib -type f -name '*.exe' -exec mv {} server.exe \;
 
       - name: upload release info to artifact
         uses: actions/upload-artifact@v3
@@ -357,5 +116,3 @@ jobs:
             changed.txt
             versions.json
             *.vsix
-            *.exe
-
