@@ -53,7 +53,7 @@ jobs:
 
       - name: release alpha npm packages to npmjs.org
         run: |
-          npx lerna version prerelease --preid=alpha.$(git rev-parse --short HEAD) --exact --no-push --allow-branch dev --yes
+          npx lerna version prerelease --preid=alpha.$(git rev-parse --short HEAD) --exact --no-push --allow-branch wenyt/test1 --no-git-tag-version --yes
 
       - name: version change
         id: version-change
